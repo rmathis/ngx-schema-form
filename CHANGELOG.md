@@ -1,3 +1,38 @@
+# 2.3.4 (2019-07-01)
+
+- Upgrade to Angular 8 (ebrehault)
+
+# 2.3.3 (2019-06-14)
+
+- Update angular to 7.2 (mathilde-pellerin)
+
+# 2.3.2 (2018-12-17)
+
+- Extend visibleIf condition with `oneOf` and `allOf` (daniele-pecora)
+- Rename the `required` flag, fixed #263. (Invis1ble)
+- Reset SchemaValidator (daniele-pecora)
+- Fix disabled property (Jackson Vaughan)
+
+# 2.3.1 (2018-11-14)
+
+- Fix package.json to explicitly support Angular 6 and 7
+
+# 2.3.0 (2018-11-14)
+
+- Fix #233: do not emit modelChange twice (ebrehault)
+- Fix array item remove (ebrehault)
+- Angular 7 compliancy (ebrehault)
+- Fix perr dependencies (akloeber)
+
+# 2.2.0-beta.1 (2018-09-17)
+
+- Support custom bindings (Daniele Pecora)
+- Add normalizeExtensions to SchemaPreprocessor (WhileTrueEndWhile)
+
+# 2.1.0-beta.1 (2018-07-11)
+
+- Template schema form (Juan Manuel Verges)
+
 # 2.0.0-beta.1
 
 - Angular 6 compliancy

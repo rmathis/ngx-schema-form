@@ -18,6 +18,7 @@ export class SchemaPreprocessor {
 
   static preprocess(jsonSchema: any, path = '/'): any {
     jsonSchema = jsonSchema || {};
+    SchemaPreprocessor.normalizeExtensions(jsonSchema);
     if (jsonSchema.type === 'object') {
       SchemaPreprocessor.checkProperties(jsonSchema, path);
       SchemaPreprocessor.checkAndCreateFieldsets(jsonSchema, path);
@@ -58,13 +59,17 @@ export class SchemaPreprocessor {
       }
     }
 
-    for (let fieldId of fieldsId) {
+    for (const fieldId of fieldsId) {
+      const isRequired = jsonSchema.required && jsonSchema.required.indexOf(fieldId) > -1;
+      if (isRequired && jsonSchema.properties[fieldId]) {
+        jsonSchema.properties[fieldId].isRequired = true;
+      }
       if (usedFields.hasOwnProperty(fieldId)) {
         if (usedFields[fieldId].length > 1) {
           schemaError(`${fieldId} is referenced by more than one fieldset: ${usedFields[fieldId]}`, path);
         }
         delete usedFields[fieldId];
-      } else if (jsonSchema.required.indexOf(fieldId) > -1) {
+      } else if (isRequired) {
         schemaError(`${fieldId} is a required field but it is not referenced as part of a 'order' or a 'fieldset' property`, path);
       } else {
         delete jsonSchema[fieldId];
@@ -145,6 +150,32 @@ export class SchemaPreprocessor {
             SchemaPreprocessor.removeRecursiveRefProperties(jsonSchema.properties[fieldId], definitionPath);
           }
         }
+      }
+    }
+  }
+  
+  /**
+   * Enables alias names for JSON schema extensions.
+   *
+   * Copies the value of each alias JSON schema property
+   * to the JSON schema property of ngx-schema-form.
+   *
+   * @param schema JSON schema to enable alias names.
+   */
+  private static normalizeExtensions(schema: any): void {
+    const extensions = [
+        { name: "fieldsets", regex: /^x-?field-?sets$/i },
+        { name: "widget",    regex: /^x-?widget$/i },
+        { name: "visibleIf", regex: /^x-?visible-?if$/i }
+    ];
+    const keys = Object.keys(schema);
+    for (let i = 0; i < keys.length; ++i) {
+      let k = keys[i];
+      let e = extensions.find(e => !!k.match(e.regex));
+      if (e) {
+        let v = schema[k];
+        let copy = JSON.parse(JSON.stringify(v));
+        schema[e.name] = copy;
       }
     }
   }
